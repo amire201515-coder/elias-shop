@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex">
+<title>مدیریت فروشگاه</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&display=swap">
+<style>
+:root{--bg:#F1F3F7;--surface:#FFFFFF;--ink:#0E1626;--muted:#5C6678;--line:#DDE2EA;--accent:#2438E8;--accent-ink:#FFFFFF;--accent-soft:#E4E8FF;--ok:#14803C;--bad:#B3261E;--bad-soft:#FCE5E3;--warn-soft:#FFF3D6;--font:'Vazirmatn',Tahoma,system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0B1020;--surface:#141B30;--ink:#EEF1F8;--muted:#9AA5BA;--line:#27304A;--accent:#7C8CFF;--accent-ink:#0B1020;--accent-soft:#222B5A;--ok:#58D07A;--bad:#FF8A80;--bad-soft:#3A1B1E;--warn-soft:#3A2F12;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0B1020;--surface:#141B30;--ink:#EEF1F8;--muted:#9AA5BA;--line:#27304A;--accent:#7C8CFF;--accent-ink:#0B1020;--accent-soft:#222B5A;--ok:#58D07A;--bad:#FF8A80;--bad-soft:#3A1B1E;--warn-soft:#3A2F12;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.7;margin:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 120px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px;padding-top:16px}
+h1{font-size:22px;margin:0}h2{font-size:17px;margin:0}
+.sub,.note{color:var(--muted);font-size:13px}
+input,textarea,select,button{font-family:inherit;font-size:15px}
+input[type=text],input[type=password],input[type=tel],textarea,select{width:100%;min-width:0;padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink)}
+textarea{min-height:84px;resize:vertical}
+input:focus,textarea:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.field{display:flex;flex-direction:column;gap:4px}.field label{font-size:13px;color:var(--muted)}
+.btn{display:block;width:100%;text-align:center;border:0;border-radius:12px;padding:12px;font-weight:800;font-size:15.5px;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink);font-weight:500}
+.btn.danger{background:var(--bad-soft);color:var(--bad)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tabs button{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:12px;padding:10px;font-weight:700;cursor:pointer}
+.tabs button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.item{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px;cursor:pointer;width:100%;text-align:right;color:var(--ink)}
+.item .th{width:56px;height:56px;border-radius:10px;background:var(--accent-soft);display:grid;place-items:center;color:var(--muted);font-size:12px;overflow:hidden}
+.item .th img{width:100%;height:100%;object-fit:cover}
+.item b{display:block;font-size:14.5px;overflow-wrap:anywhere}.item span{font-size:12.5px;color:var(--muted)}
+.tag{font-size:12px;padding:2px 8px;border-radius:8px;background:var(--bad-soft);color:var(--bad);font-weight:700;white-space:nowrap}
+.list{display:flex;flex-direction:column;gap:8px}
+.savebar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.savebar>div{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:6px}
+.bg{position:fixed;inset:0;z-index:8;background:rgba(8,12,24,.55);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:720px;max-height:94%;overflow-y:auto;border-radius:20px 20px 0 0;padding:18px max(16px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px}
+.prev{width:120px;height:120px;border-radius:14px;background:var(--accent-soft);display:grid;place-items:center;color:var(--muted);overflow:hidden;font-size:13px}
+.prev img{width:100%;height:100%;object-fit:cover}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.crow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.msg{padding:10px 12px;border-radius:12px;font-size:14px}
+.msg.ok{background:var(--accent-soft)}.msg.err{background:var(--bad-soft);color:var(--bad)}.msg.warn{background:var(--warn-soft)}
+.ck{display:flex;gap:8px;align-items:center}.ck input{width:20px;height:20px}
+.num{direction:ltr;unicode-bidi:plaintext}
+ol{margin:0;padding-inline-start:20px;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <h1>مدیریت فروشگاه</h1>
+
+ <section id="login" class="panel" hidden>
+  <h2>ورود مدیر</h2>
+  <div class="note">این صفحه برای صاحب فروشگاهه. بدون «توکن»، هیچ‌کس نمی‌تونه چیزی تغییر بده. توکن فقط روی همین مرورگر ذخیره می‌شه و برای هیچ‌جا غیر از گیتهاب فرستاده نمی‌شه. توکن رو برای هیچ‌کس نفرست و توی گفتگو با هوش مصنوعی هم ننویس.</div>
+  <div class="field"><label for="tok">توکن گیتهاب</label><input type="password" id="tok" autocomplete="off" dir="ltr"></div>
+  <button type="button" class="btn" id="dologin">ورود</button>
+  <div id="loginmsg"></div>
+  <details><summary>توکن رو چطور بسازم؟</summary>
+   <ol>
+    <li>توی مرورگر، وارد گیتهاب شو و برو به <b class="num">github.com/settings/personal-access-tokens/new</b></li>
+    <li>اسم: <b>elias-shop-admin</b>. انقضا: ۹۰ روز یا بیشتر.</li>
+    <li>Repository access: <b>Only select repositories</b> و بعد <b>elias-shop</b> رو انتخاب کن.</li>
+    <li>Permissions ← Repository permissions ← <b>Contents</b>: <b>Read and write</b>.</li>
+    <li>پایین صفحه <b>Generate token</b> رو بزن، توکن رو کپی کن و اینجا پیست کن.</li>
+   </ol>
+  </details>
+ </section>
+
+ <section id="app" hidden>
+  <div class="tabs"><button type="button" id="tab-p" aria-pressed="true">کالاها</button><button type="button" id="tab-s" aria-pressed="false">تنظیمات و دسته‌ها</button></div>
+
+  <div id="v-p" class="list" style="margin-top:14px">
+   <input type="text" id="psearch" placeholder="جستجوی کالا" aria-label="جستجوی کالا" autocomplete="off">
+   <button type="button" class="btn" id="addp">افزودن کالای جدید</button>
+   <div class="list" id="plist"></div>
+  </div>
+
+  <div id="v-s" class="panel" style="margin-top:14px" hidden>
+   <h2>اطلاعات فروشگاه</h2>
+   <div class="field"><label for="s-shop">نام فروشگاه</label><input type="text" id="s-shop"></div>
+   <div class="field"><label for="s-local">شماره‌ی واتساپ (مثلاً ۰۹۱۲...)</label><input type="tel" id="s-local" inputmode="tel" dir="ltr"></div>
+   <div class="field"><label for="s-bt">تیتر بنر صفحه‌ی اول</label><input type="text" id="s-bt"></div>
+   <div class="field"><label for="s-bs">متن زیر تیتر بنر</label><input type="text" id="s-bs"></div>
+   <h2>دسته‌ها</h2>
+   <div class="list" id="catlist"></div>
+   <button type="button" class="btn ghost" id="addcat">افزودن دسته</button>
+   <button type="button" class="btn ghost" id="logout">خروج و پاک کردن توکن از این مرورگر</button>
+  </div>
+ </section>
+</div>
+
+<div class="savebar" id="savebar" hidden><div>
+ <div id="savemsg"></div>
+ <button type="button" class="btn" id="save" disabled>ذخیره‌ی تغییرات</button>
+</div></div>
+
+<div class="bg" id="bg" hidden><div class="sheet" role="dialog" aria-modal="true" id="sheet"></div></div>
+
+<script>
+const OWNER='amire201515-coder',REPO='elias-shop',BR='main';
+const API='https://api.github.com/repos/'+OWNER+'/'+REPO;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fa=n=>Number(n).toLocaleString('fa-IR');
+const ls={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,v);}catch(e){}},del(k){try{localStorage.removeItem(k);}catch(e){}}};
+const dig=s=>String(s||'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[٬,،\s]/g,'');
+let token=ls.get('adm-token')||'';
+let P=[],C={cats:[]},shaP='',shaC='',dirtyP=false,dirtyC=false,imgs={},busy=false;
+
+const hdr=()=>({Authorization:'Bearer '+token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'});
+async function gh(path,opt){
+ opt=opt||{};
+ const r=await fetch(API+path,{method:opt.method||'GET',body:opt.body,headers:hdr()});
+ let j=null;try{j=await r.json();}catch(e){}
+ if(!r.ok){const e=new Error('http '+r.status);e.status=r.status;e.body=j;throw e;}
+ return j;
+}
+const b64dec=s=>new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\n/g,'')),c=>c.charCodeAt(0)));
+const b64enc=s=>{const b=new TextEncoder().encode(s);let bin='';b.forEach(x=>{bin+=String.fromCharCode(x);});return btoa(bin);};
+async function readFile(path){const j=await gh('/contents/'+path+'?ref='+BR+'&t='+Date.now());return{sha:j.sha,text:b64dec(j.content)};}
+async function writeFile(path,b64,sha,msg){
+ const body={message:msg,content:b64,branch:BR};if(sha)body.sha=sha;
+ return gh('/contents/'+path,{method:'PUT',body:JSON.stringify(body)});
+}
+function errText(e){
+ if(e.status===401)return 'توکن معتبر نیست یا منقضی شده. دوباره وارد شو.';
+ if(e.status===403||e.status===404)return 'دسترسی نداری. توکن باید برای مخزن elias-shop اجازه‌ی Contents: Read and write داشته باشه.';
+ if(e.status===409||e.status===422)return 'فایل در گیتهاب تغییر کرده. صفحه رو رفرش کن و دوباره امتحان کن.';
+ return 'خطا در ارتباط با گیتهاب. اینترنت رو چک کن و دوباره امتحان کن.';
+}
+function msg(el,t,cls){$(el).innerHTML=t?`<div class="msg ${cls||'ok'}">${t}</div>`:'';}
+
+/* login */
+async function tryLogin(){
+ msg('#loginmsg','در حال بررسی...','warn');
+ try{
+  const r=await gh('');
+  if(!r.permissions||!r.permissions.push){msg('#loginmsg','این توکن اجازه‌ی نوشتن توی مخزن رو نداره. Contents باید Read and write باشه.','err');return false;}
+  await load();ls.set('adm-token',token);
+  $('#login').hidden=true;$('#app').hidden=false;$('#savebar').hidden=false;renderAll();return true;
+ }catch(e){msg('#loginmsg',errText(e),'err');return false;}
+}
+async function load(){
+ const a=await readFile('data/products.json');P=JSON.parse(a.text);shaP=a.sha;
+ try{const c=await readFile('data/config.json');C=JSON.parse(c.text);shaC=c.sha;}
+ catch(e){if(e.status!==404)throw e;C={shop:'لوازم جانبی الیاس',wa:'989018317861',local:'09018317861',bannerTitle:'',bannerSub:'',cats:[{k:'case',l:'قاب'},{k:'cable',l:'کابل و تبدیل'},{k:'audio',l:'هندزفری و ایرپاد'},{k:'power',l:'شارژر و باتری'},{k:'other',l:'سایر'}]};shaC='';dirtyC=true;}
+ if(!Array.isArray(C.cats))C.cats=[];
+}
+$('#dologin').onclick=()=>{token=$('#tok').value.trim();if(!token){msg('#loginmsg','توکن رو وارد کن.','err');return;}tryLogin().then(ok=>{if(!ok)token='';});};
+$('#logout').onclick=()=>{ls.del('adm-token');token='';location.reload();};
+
+/* render */
+const catName=k=>(C.cats.find(c=>c.k===k)||{l:k||'بدون دسته'}).l;
+function renderAll(){renderList();renderSettings();upd();}
+function renderList(){
+ const t=$('#psearch').value.trim().toLowerCase();
+ const l=P.map((p,i)=>[p,i]).filter(([p])=>!t||String(p.name).toLowerCase().includes(t)).reverse();
+ $('#plist').innerHTML=l.length?l.map(([p,i])=>`<button type="button" class="item" data-i="${i}"><div class="th">${p.img?`<img src="${esc(imgs[p.img]?'data:image/jpeg;base64,'+imgs[p.img]:p.img)}" alt="">`:'بدون عکس'}</div><div><b>${esc(p.name)}</b><span>${esc(catName(p.cat))} · ${fa(p.price)} تومان</span></div>${p.avail===false?'<span class="tag">ناموجود</span>':''}</button>`).join(''):'<div class="note">کالایی پیدا نشد.</div>';
+}
+function upd(){
+ const d=dirtyP||dirtyC||Object.keys(imgs).length>0;
+ $('#save').disabled=!d||busy;
+ if(!busy)msg('#savemsg',d?'تغییرات ذخیره‌نشده داری.':'','warn');
+}
+$('#psearch').oninput=renderList;
+$('#tab-p').onclick=()=>{$('#v-p').hidden=false;$('#v-s').hidden=true;$('#tab-p').setAttribute('aria-pressed',true);$('#tab-s').setAttribute('aria-pressed',false);};
+$('#tab-s').onclick=()=>{$('#v-p').hidden=true;$('#v-s').hidden=false;$('#tab-p').setAttribute('aria-pressed',false);$('#tab-s').setAttribute('aria-pressed',true);};
+
+/* product sheet */
+let editing=null;
+function nextId(){let m=0;P.forEach(p=>{const x=/^p(\d+)$/.exec(p.id);if(x)m=Math.max(m,+x[1]);});return 'p'+String(m+1).padStart(2,'0');}
+function openSheet(i){
+ const isNew=i<0;
+ editing={i,imgData:null,removeImg:false,p:isNew?{id:nextId(),name:'',cat:(C.cats[0]||{}).k||'other',sub:'',price:'',oldPrice:'',desc:'',avail:true,img:''}:Object.assign({},P[i])};
+ const p=editing.p;
+ const subs=[...new Set(P.filter(x=>x.cat===p.cat&&x.sub).map(x=>x.sub))];
+ $('#sheet').innerHTML=`<h2>${isNew?'کالای جدید':'ویرایش کالا'}</h2>
+ <div class="prev" id="prev">${p.img?`<img src="${esc(p.img)}" alt="">`:'بدون عکس'}</div>
+ <div class="row2"><label class="btn ghost" for="photo" style="margin:0">انتخاب عکس</label><button type="button" class="btn ghost" id="rmphoto">حذف عکس</button></div>
+ <input type="file" id="photo" accept="image/*" hidden>
+ <div class="field"><label for="e-name">نام کالا</label><input type="text" id="e-name" value="${esc(p.name)}"></div>
+ <div class="field"><label for="e-cat">دسته</label><select id="e-cat">${C.cats.map(c=>`<option value="${esc(c.k)}" ${c.k===p.cat?'selected':''}>${esc(c.l)}</option>`).join('')}</select></div>
+ <div class="field"><label for="e-sub">زیردسته (اختیاری)</label><input type="text" id="e-sub" list="subs" value="${esc(p.sub)}"><datalist id="subs">${subs.map(s=>`<option value="${esc(s)}">`).join('')}</datalist></div>
+ <div class="row2"><div class="field"><label for="e-price">قیمت (تومان)</label><input type="text" id="e-price" inputmode="numeric" value="${esc(p.price)}"></div><div class="field"><label for="e-old">قیمت قبل از تخفیف (اختیاری)</label><input type="text" id="e-old" inputmode="numeric" value="${esc(p.oldPrice||'')}"></div></div>
+ <div class="field"><label for="e-desc">توضیحات (اختیاری)</label><textarea id="e-desc">${esc(p.desc||'')}</textarea></div>
+ <label class="ck"><input type="checkbox" id="e-av" ${p.avail===false?'':'checked'}> موجود است</label>
+ <div id="e-msg"></div>
+ <button type="button" class="btn" id="e-ok">${isNew?'افزودن':'تأیید'}</button>
+ ${isNew?'':'<button type="button" class="btn danger" id="e-del">حذف کالا</button>'}
+ <button type="button" class="btn ghost" id="e-close">بستن</button>`;
+ $('#bg').hidden=false;
+ $('#photo').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{editing.imgData=await shrink(f);editing.removeImg=false;$('#prev').innerHTML=`<img src="data:image/jpeg;base64,${editing.imgData}" alt="">`;}catch(er){msg('#e-msg','عکس خونده نشد. عکس دیگه‌ای امتحان کن.','err');}};
+ $('#rmphoto').onclick=()=>{editing.imgData=null;editing.removeImg=true;$('#prev').textContent='بدون عکس';};
+ $('#e-close').onclick=()=>{$('#bg').hidden=true;};
+ if($('#e-del'))$('#e-del').onclick=()=>{
+  if(!$('#e-del').dataset.sure){$('#e-del').dataset.sure='1';$('#e-del').textContent='مطمئنی؟ دوباره بزن تا حذف بشه';return;}
+  P.splice(editing.i,1);dirtyP=true;$('#bg').hidden=true;renderAll();};
+ $('#e-ok').onclick=commitEdit;
+}
+function shrink(file){
+ return new Promise((res,rej)=>{
+  const url=URL.createObjectURL(file),im=new Image();
+  im.onload=()=>{const m=900,k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+   const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(url);
+   const d=c.toDataURL('image/jpeg',0.82);res(d.split(',')[1]);};
+  im.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('img'));};im.src=url;});
+}
+function commitEdit(){
+ const p=editing.p,name=$('#e-name').value.trim(),price=parseInt(dig($('#e-price').value),10),oldv=dig($('#e-old').value),old=oldv?parseInt(oldv,10):0;
+ if(!name){msg('#e-msg','نام کالا رو بنویس.','err');return;}
+ if(!price||price<=0){msg('#e-msg','قیمت رو به عدد بنویس.','err');return;}
+ if(oldv&&!(old>price)){msg('#e-msg','قیمت قبل از تخفیف باید از قیمت فعلی بیشتر باشه.','err');return;}
+ p.name=name;p.cat=$('#e-cat').value;p.sub=$('#e-sub').value.trim();p.price=price;
+ if(old)p.oldPrice=old;else delete p.oldPrice;
+ const d=$('#e-desc').value.trim();if(d)p.desc=d;else delete p.desc;
+ if($('#e-av').checked)delete p.avail;else p.avail=false;
+ if(!p.sub)delete p.sub;
+ if(editing.imgData){const path='img/'+p.id+'-'+Date.now().toString(36)+'.jpg';imgs[path]=editing.imgData;p.img=path;}
+ else if(editing.removeImg)delete p.img;
+ if(!p.img)delete p.img;
+ if(editing.i<0)P.push(p);else P[editing.i]=p;
+ dirtyP=true;$('#bg').hidden=true;renderAll();
+}
+$('#plist').onclick=e=>{const b=e.target.closest('.item');if(b)openSheet(+b.dataset.i);};
+$('#addp').onclick=()=>openSheet(-1);
+$('#bg').onclick=e=>{if(e.target.id==='bg')$('#bg').hidden=true;};
+
+/* settings */
+function renderSettings(){
+ $('#s-shop').value=C.shop||'';$('#s-local').value=C.local||'';$('#s-bt').value=C.bannerTitle||'';$('#s-bs').value=C.bannerSub||'';
+ $('#catlist').innerHTML=C.cats.map((c,i)=>`<div class="crow"><input type="text" data-ci="${i}" value="${esc(c.l)}" aria-label="نام دسته"><button type="button" class="btn danger" style="width:auto;padding:10px 14px" data-cd="${i}">حذف</button></div>`).join('');
+}
+['#s-shop','#s-local','#s-bt','#s-bs'].forEach(s=>$(s).addEventListener('input',()=>{
+ C.shop=$('#s-shop').value.trim();
+ const l=dig($('#s-local').value);C.local=l;C.wa=l.startsWith('0')?'98'+l.slice(1):l;
+ C.bannerTitle=$('#s-bt').value.trim();C.bannerSub=$('#s-bs').value.trim();dirtyC=true;upd();}));
+$('#catlist').addEventListener('input',e=>{const i=e.target.dataset.ci;if(i!=null){C.cats[+i].l=e.target.value;dirtyC=true;upd();}});
+$('#catlist').addEventListener('click',e=>{
+ const i=e.target.dataset.cd;if(i==null)return;
+ const c=C.cats[+i];
+ if(P.some(p=>p.cat===c.k)){msg('#savemsg','این دسته کالا داره. اول کالاهاش رو به دسته‌ی دیگه ببر.','err');return;}
+ C.cats.splice(+i,1);dirtyC=true;renderSettings();upd();});
+$('#addcat').onclick=()=>{let n=1;while(C.cats.some(c=>c.k==='c'+n))n++;C.cats.push({k:'c'+n,l:'دسته‌ی جدید'});dirtyC=true;renderSettings();upd();};
+
+/* save */
+$('#save').onclick=async()=>{
+ if(busy)return;busy=true;$('#save').disabled=true;
+ try{
+  const paths=Object.keys(imgs);
+  for(let k=0;k<paths.length;k++){msg('#savemsg','در حال بارگذاری عکس '+fa(k+1)+' از '+fa(paths.length)+'...','warn');await writeFile(paths[k],imgs[paths[k]],'','افزودن عکس کالا');}
+  if(dirtyP){msg('#savemsg','در حال ذخیره‌ی کالاها...','warn');const r=await writeFile('data/products.json',b64enc(JSON.stringify(P,null,1)+'\n'),shaP,'به‌روزرسانی کالاها');shaP=r.content.sha;}
+  if(dirtyC){msg('#savemsg','در حال ذخیره‌ی تنظیمات...','warn');const r=await writeFile('data/config.json',b64enc(JSON.stringify(C,null,1)+'\n'),shaC,'به‌روزرسانی تنظیمات');shaC=r.content.sha;}
+  imgs={};dirtyP=false;dirtyC=false;busy=false;renderAll();
+  msg('#savemsg','ذخیره شد. تغییرات سایت معمولاً بعد از ۱ تا ۲ دقیقه دیده می‌شن. اگه همون موقع تغییری ندیدی، صفحه رو یک بار رفرش کن.','ok');
+ }catch(e){busy=false;$('#save').disabled=false;msg('#savemsg',errText(e),'err');}
+};
+window.addEventListener('beforeunload',e=>{if(dirtyP||dirtyC||Object.keys(imgs).length){e.preventDefault();e.returnValue='';}});
+
+/* start */
+(async()=>{
+ if(!token){$('#login').hidden=false;return;}
+ const ok=await tryLogin();
+ if(!ok){$('#login').hidden=false;}
+})();
+</script>
+</body>
+</html>

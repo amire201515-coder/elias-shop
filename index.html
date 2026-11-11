@@ -58,6 +58,9 @@ textarea{min-height:76px;resize:vertical}
 .qty{display:grid;grid-template-columns:42px 1fr 42px;align-items:center;border:1px solid var(--accent);border-radius:10px;overflow:hidden}
 .qty button{border:0;background:var(--accent-soft);color:var(--accent);font-size:20px;font-weight:700;padding:5px 0;cursor:pointer}
 .qty span{text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+.off{background:var(--bad-soft);color:var(--bad);border-radius:6px;padding:0 6px;font-size:12px;font-weight:700}
+.price s{color:var(--muted);font-weight:500;font-size:13px}
+.desc{color:var(--muted);font-size:14.5px;white-space:pre-line}
 .empty{color:var(--muted);text-align:center;padding:30px 0}
 .cartbar{position:fixed;left:0;right:0;bottom:0;z-index:6;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:var(--surface);border-top:1px solid var(--line)}
 .cartbar button{display:flex;width:100%;max-width:720px;margin:0 auto;justify-content:space-between;align-items:center;border:0;border-radius:14px;padding:13px 16px;background:var(--accent);color:var(--accent-ink);font-weight:800;cursor:pointer;font-size:16px}
@@ -126,13 +129,13 @@ textarea{min-height:76px;resize:vertical}
 <body>
 <div class="wrap">
  <div class="topbar">
-  <div class="logo" aria-hidden="true">ا</div>
-  <div class="t">لوازم جانبی الیاس</div>
+  <div class="logo" id="shoplogo" aria-hidden="true">ا</div>
+  <div class="t" id="shopname">لوازم جانبی الیاس</div>
   <button type="button" class="iconbtn" id="gosearch" aria-label="جستجو"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
  </div>
 
  <section class="view" id="v-home" hidden>
-  <div class="banner"><b>لوازم جانبی موبایل، سفارش آسان و هماهنگی در واتساپ</b><span>کالا رو انتخاب کن، سبد رو بفرست، بقیه‌اش رو توی گفتگو هماهنگ می‌کنیم.</span><button type="button" class="btn" data-go="products" data-reset="1">دیدن همه‌ی کالاها</button></div>
+  <div class="banner"><b id="btitle">لوازم جانبی موبایل، سفارش آسان و هماهنگی در واتساپ</b><span id="bsub">کالا رو انتخاب کن، سبد رو بفرست، بقیه‌اش رو توی گفتگو هماهنگ می‌کنیم.</span><button type="button" class="btn" data-go="products" data-reset="1">دیدن همه‌ی کالاها</button></div>
   <div class="sec"><h2>دسته‌ها</h2><button type="button" class="link" data-go="categories">همه‌ی دسته‌ها</button></div>
   <div class="hscroll" id="hcats"></div>
   <div class="two">
@@ -188,9 +191,9 @@ textarea{min-height:76px;resize:vertical}
 <div class="sheetbg" id="psheet" hidden><div class="sheet" role="dialog" aria-modal="true" aria-label="مشخصات کالا" id="pbody"></div></div>
 
 <script>
-const SHOP='لوازم جانبی الیاس',WA='989018317861',LOCAL='09018317861';
+let SHOP='لوازم جانبی الیاس',WA='989018317861',LOCAL='09018317861';
 let PRODUCTS=[];
-const CATS=[['case','قاب'],['cable','کابل و تبدیل'],['audio','هندزفری و ایرپاد'],['power','شارژر و باتری'],['other','سایر']];
+let CATS=[['case','قاب'],['cable','کابل و تبدیل'],['audio','هندزفری و ایرپاد'],['power','شارژر و باتری'],['other','سایر']];
 const FAQ=[
  ['چطور سفارش بدم؟','کالاها رو به سبد اضافه کن، اسم و آدرس رو بنویس و دکمه‌ی «ارسال سفارش در واتساپ» رو بزن. پیام آماده باز می‌شه و باید خودت ارسالش کنی.'],
  ['سفارش بعد از ارسال چه می‌شه؟','موجودی و جمع نهایی رو توی واتساپ برات تأیید می‌کنیم.'],
@@ -226,7 +229,8 @@ function actions(p){
  if(p.avail===false)return '<button type="button" class="add" disabled>ناموجود</button>';
  return q?`<div class="qty"><button type="button" data-d="1" data-id="${p.id}" aria-label="یکی اضافه کن">+</button><span>${fa(q)}</span><button type="button" data-d="-1" data-id="${p.id}" aria-label="یکی کم کن">−</button></div>`:`<button type="button" class="add" data-d="1" data-id="${p.id}">افزودن به سبد</button>`;
 }
-function card(p){return `<div class="card">${pic(p)}<div class="body"><button type="button" class="name linkname" data-open="${p.id}" style="background:none;border:0;padding:0;text-align:right;color:inherit;cursor:pointer;font-family:inherit">${esc(p.name)}</button><div class="price">${fa(p.price)} <small>تومان</small></div>${actions(p)}</div></div>`;}
+function priceHtml(p){const o=Number(p.oldPrice)||0;if(o>p.price){const pc=Math.round((o-p.price)/o*100);return `<div class="price"><s>${fa(o)}</s> <span class="off">${fa(pc)}٪ تخفیف</span><br>${fa(p.price)} <small>تومان</small></div>`;}return `<div class="price">${fa(p.price)} <small>تومان</small></div>`;}
+function card(p){return `<div class="card">${pic(p)}<div class="body"><button type="button" class="name linkname" data-open="${p.id}" style="background:none;border:0;padding:0;text-align:right;color:inherit;cursor:pointer;font-family:inherit">${esc(p.name)}</button>${priceHtml(p)}${actions(p)}</div></div>`;}
 /* nav */
 const NAV=[['home','خانه'],['categories','دسته‌ها'],['cart','سبد خرید'],['support','پشتیبانی'],['login','ورود']];
 function renderNav(route){
@@ -310,7 +314,7 @@ function renderLogin(msg){
 /* product sheet */
 function openProduct(id){
  const p=byId(id);if(!p)return;
- $('#pbody').innerHTML=`<div class="pd">${pic(p)}<h2>${esc(p.name)}</h2><div class="price">${fa(p.price)} <small>تومان</small></div><div class="kvrow"><span>دسته</span><span>${catName(p.cat)}${p.sub&&p.sub!==catName(p.cat)?' / '+esc(p.sub):''}</span></div><div class="kvrow"><span>وضعیت</span><span>${p.avail===false?'ناموجود':'موجود (موجودی نهایی در واتساپ تأیید می‌شه)'}</span></div><div id="pact">${actions(p)}</div><button type="button" class="btn ghost" id="pclose">بستن</button></div>`;
+ $('#pbody').innerHTML=`<div class="pd">${pic(p)}<h2>${esc(p.name)}</h2>${priceHtml(p)}${p.desc?`<div class="desc">${esc(p.desc)}</div>`:''}<div class="kvrow"><span>دسته</span><span>${catName(p.cat)}${p.sub&&p.sub!==catName(p.cat)?' / '+esc(p.sub):''}</span></div><div class="kvrow"><span>وضعیت</span><span>${p.avail===false?'ناموجود':'موجود (موجودی نهایی در واتساپ تأیید می‌شه)'}</span></div><div id="pact">${actions(p)}</div><button type="button" class="btn ghost" id="pclose">بستن</button></div>`;
  $('#psheet').dataset.id=id;$('#psheet').hidden=false;
 }
 /* router */
@@ -352,7 +356,14 @@ document.addEventListener('input',e=>{
  if(/^f[npad]$/.test(e.target.id))updWa();
 });
 window.addEventListener('hashchange',route);
-fetch('data/products.json').then(r=>r.json()).then(d=>{PRODUCTS=d;PRODUCTS.forEach((p,i)=>{p.order=i;});Object.keys(cart).forEach(id=>{if(!byId(id)||!(cart[id]>0))delete cart[id];});route();}).catch(()=>{document.querySelector('.wrap').insertAdjacentHTML('beforeend','<div class="empty">کالاها بارگذاری نشد. صفحه را دوباره باز کن.</div>');});
+const getJ=u=>fetch(u+'?t='+Date.now()).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();});
+Promise.all([getJ('data/products.json'),getJ('data/config.json').catch(()=>null)]).then(([d,c])=>{
+ PRODUCTS=d;PRODUCTS.forEach((p,i)=>{p.order=i;});
+ if(c){if(c.shop){SHOP=c.shop;$('#shopname').textContent=SHOP;$('#shoplogo').textContent=SHOP.trim().charAt(0);document.title=SHOP;}
+  if(c.wa)WA=c.wa;if(c.local)LOCAL=c.local;if(c.bannerTitle)$('#btitle').textContent=c.bannerTitle;if(c.bannerSub)$('#bsub').textContent=c.bannerSub;
+  if(Array.isArray(c.cats)&&c.cats.length)CATS=c.cats.map(x=>[x.k,x.l]);}
+ Object.keys(cart).forEach(id=>{if(!byId(id)||!(cart[id]>0))delete cart[id];});route();
+}).catch(()=>{document.querySelector('.wrap').insertAdjacentHTML('beforeend','<div class="empty">کالاها بارگذاری نشد. صفحه را دوباره باز کن.</div>');});
 </script>
 
 </body>
